@@ -34,19 +34,19 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/cardetails/:id", async (req,res) =>{
+    app.get("/cardetails/:id", async (req, res) => {
       const id = req.params.id;
       console.log(id);
-      const query ={_id : new ObjectId(id)}
-      const result = await carCollection.findOne(query)
-      res.send(result)
-    })
+      const query = { _id: new ObjectId(id) };
+      const result = await carCollection.findOne(query);
+      res.send(result);
+    });
 
     app.get("/addedtoys", async (req, res) => {
       console.log(req.query.email);
       let query = {};
-      if(req.query?.email){
-        query = {email:req.query.email}
+      if (req.query?.email) {
+        query = { email: req.query.email };
       }
       const result = await toysCollection.find(query).toArray();
       res.send(result);
@@ -59,19 +59,35 @@ async function run() {
       res.send(result);
     });
 
-
-    app.get("/addedtoys/:id", async (req,res) =>{
+    app.get("/addedtoys/:id", async (req, res) => {
       const id = req.params.id;
       console.log(id);
-      const query ={_id : new ObjectId(id)}
-      const result = await toysCollection.findOne(query)
+      const query = { _id: new ObjectId(id) };
+      const result = await toysCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.put('/addedtoys/:id' , async(req, res) =>{
+      const id = req.params.id;
+      const toys =req.body
+      console.log(toys);
+      const filter = {_id : new ObjectId(id)}
+      const options = {upsert : true}
+      const updatedToys = {
+        $set: {
+          toyPrice : toys.toyPrice,
+          quantity : toys.quantity,
+          description : toys.description
+        }
+      }
+      const result = await toysCollection.updateOne(filter , updatedToys , options)
       res.send(result)
     })
 
-    app.delete('addedtoys/:id', (req,res) =>{
-          const id = req.params.id
-          res.send({send_from_server: id})
-    })
+    app.delete("addedtoys/:id", (req, res) => {
+      const id = req.params.id;
+      res.send({ send_from_server: id });
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
